@@ -1,0 +1,33 @@
+Table creation-create external table and map to the parquet data in s3
+----------------------------------------------------------------------
+CREATE EXTERNAL TABLE IF NOT EXISTS sampledb.weather (
+  `forecastsitecode` bigint,
+  `observationtime` bigint,
+  `observationdate` timestamp,
+  `winddirection` bigint,
+  `windspeed` bigint,
+  `windgust` double,
+  `visibility` double,
+  `screenTemperature` double,
+  `pressure` double,
+  `siginificantweathercode` bigint,
+  `sitename` string,
+  `latitude` double,
+  `longitude` double,
+  `region` string,
+  `country` string 
+)
+STORED AS PARQUET
+LOCATION 's3://weather-504/'
+tblproperties ("parquet.compress"="GZIP");
+
+query to get the hottest day,region,temperature
+---------------------------------------------------
+
+select  from_unixtime(to_unixtime(observationdate)/1000) as 
+observationdate,screentemperature,region from weather 
+where screentemperature= (select max(screentemperature) from weather)
+
+
+
+
